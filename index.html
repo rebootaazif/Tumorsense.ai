@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TumorSense | Nothing Design</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- React and ReactDOM (using React 18 development build for better compatibility) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel Standalone for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Charts handled with SVG (no external dependency needed) -->
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .dot-matrix {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nothing-border {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+        .red-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(1.1); filter: blur(20px); }
+            to { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+        @keyframes draw {
+            from { stroke-dasharray: 0 1000; }
+            to { stroke-dasharray: 1000 0; }
+        }
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div style="color: white; padding: 20px; text-align: center; font-family: monospace;">
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <script type="text/babel" data-presets="react">
+        // ============================================
+        // CONSTANTS - REPLACE THESE VALUES AS NEEDED
+        // ============================================
+        
+        const PROJECT_INFO = {
+            title: "TUMORSENSE",
+            tagline: "AI-Powered Brain Tumor Detection",
+            organization: "INDIAN SCHOOL AL SEEB, SULTANATE OF OMAN",
+            teamName: "Superkings",
+            subject: "Artificial Intelligence (Capstone Project)",
+            academicYear: "2025 – 2026",
+            mentor: "Mrs. Shelmi K P",
+            appLink: "https://health-ai-seven.vercel.app/",
+            demoLink: "https://drive.google.com/file/d/1q5-ViA4EML0YN1a7YyRFD0tBaQSPdEM2/view?usp=drive_link",
+            videoLink: "Tumersense.mp4",
+            datasetLink: "https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset",
+            codeLink: "https://colab.research.google.com/drive/1FxMoBoSdw4-tPDjwneqVqZsWpYuBics6?usp=sharing",
+            documentationLink: "https://drive.google.com/file/d/1x5vGNnFcyptJWf0kpdSgdNIzKer1_oeq/view?usp=drive_link"
+        };
+
+        const PICTURES = {
+            goutham: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&h=500&fit=crop",
+            ridwin: "3.png",
+            jeyapranesh: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&h=500&fit=crop",
+            aazif: "1.png",
+            rakesh: "2.png",
+            sharan: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop"
+        };
+
+        const TEAM_MEMBERS = [
+            { 
+                name: "Goutham Krishna", 
+                role: "Project Lead & ML Engineer", 
+                description: "I am Goutham, I led the architecture and model optimization for TumorSense. My goal was to create a digital radiologist that works anywhere.",
+                image: PICTURES.goutham
+            },
+            { 
+                name: "Ridwin Shamim", 
+                role: "Frontend Lead & UI/UX Designer", 
+                description: "I'm Ridwin, I crafted the visual identity and user interface. I believe that complex AI tools should be beautiful and intuitive.",
+                image: PICTURES.ridwin
+            },
+            { 
+                name: "Jeyapranesh A.S", 
+                role: "Backend Developer & Data Engineer", 
+                description: "I am Jeyapranesh, I managed the pipeline and model integration. Ensuring high performance and reliability was my top priority.",
+                image: PICTURES.jeyapranesh
+            },
+            { 
+                name: "Mohammed Aazif K A", 
+                role: "Documentation Lead", 
+                description: "I am Aazif, I handled the technical documentation and report generation. Clear communication is the key to a successful project.",
+                image: PICTURES.aazif
+            },
+            { 
+                name: "Rakesh Radhakrishnan", 
+                role: "Presentation Specialist", 
+                description: "I am Rakesh, I focused on visual communication and project presentation. I love making complex data easy to understand.",
+                image: PICTURES.rakesh
+            },
+            { 
+                name: "Sharan S", 
+                role: "Research & Data Lead", 
+                description: "I am Sharan, I led the data collection and problem definition phase. Researching brain tumor types helped us build a better model.",
+                image: PICTURES.sharan
+            }
+        ];
+
+        const TECH_STACK = [
+            { name: "Frontend", tech: "React + Vite", host: "Vercel" },
+            { name: "Backend", tech: "Flask (Python)", host: "Render (Gunicorn)" },
+            { name: "ML Core", tech: "TensorFlow (TFLite)", model: "Xception" },
+            { name: "Processing", tech: "Cloudinary", utility: "Image Management" }
+        ];
+
+        const WORKFLOW_STEPS = [
+            { step: "01", title: "Upload", desc: "User uploads MRI image through the React interface." },
+            { step: "02", title: "Transmission", desc: "Image is securely sent to Flask API on Render.com." },
+            { step: "03", title: "Pre-process", desc: "Backend resizes to 299x299 pixels and normalizes values." },
+            { step: "04", title: "Inference", desc: "TFLite model performs multi-class classification." },
+            { step: "05", title: "Results", desc: "Diagnosis and confidence levels are displayed instantly." }
+        ];
+
+        const MODEL_DETAILS = {
+            base: "Xception (Transfer Learning)",
+            layers: [
+                "Flatten layer (Feature conversion to 1D)",
+                "Dropout layers (0.3 and 0.25) for Overfit Prevention",
+                "Dense layer (128 neurons, ReLU activation)",
+                "Final Softmax layer (4-class classification)"
+            ],
+            optimizer: "Adamax (Learning rate: 0.001)"
+        };
+
+        const TRAINING_DATA = {
+            source: "Masoud Nickparvar Brain Tumor MRI Dataset (Kaggle)",
+            augmentation: "Random brightness adjustments (0.8 - 1.2)",
+            specs: "10 Epochs, Batch Size: 32",
+            metrics: {
+                accuracy: "99%",
+                noTumorAcc: "100%",
+                precision: "99%",
+                recall: "99%"
+            }
+        };
+
+        const ANALOGY = {
+            role: "Highly trained digital radiologist",
+            xception: "Years of general medical education",
+            customLayers: "Specialized oncology training",
+            backend: "Hospital communication system"
+        };
+
+        const TRAINING_CODE_SNIPPET = `# Xception Implementation
+base_model = tf.keras.applications.Xception(
+    weights='imagenet', include_top=False,
+    input_shape=(299, 299, 3), pooling='max'
+)
+base_model.trainable = False
+
+model = Sequential([
+    base_model,
+    Flatten(),
+    Dropout(0.3),
+    Dense(128, activation='relu'),
+    Dropout(0.25),
+    Dense(4, activation='softmax')
+])
+
+model.compile(
+    optimizer=Adamax(learning_rate=0.001),
+    loss='categorical_crossentropy',
+    metrics=['accuracy', Precision(), Recall()]
+)`;
+
+        // ============================================
+        // UI COMPONENTS
+        // ============================================
+
+        const RedDot = () => <span className="red-dot ml-2 mb-1 shadow-[0_0_8px_rgba(255,0,0,0.6)]" />;
+
+        const Card = ({ children, className = "" }) => (
+            <div className={`glass p-8 rounded-3xl nothing-border relative overflow-hidden group transition-all duration-500 hover:scale-[1.01] ${className}`}>
+                <div className="absolute inset-0 bg-white/[0.01] group-hover:bg-white/[0.03] transition-colors" />
+                <div className="relative z-10">{children}</div>
+            </div>
+        );
+
+        const DotTitle = ({ children, className = "" }) => (
+            <h2 className={`dot-matrix font-bold tracking-tight ${className}`}>
+                {children}
+            </h2>
+        );
+
+        const Button = ({ onClick, children, variant = 'primary' }) => {
+            const baseClass = "px-8 py-3 rounded-full font-medium transition-all duration-300 uppercase text-[10px] tracking-[0.2em] flex items-center justify-center gap-2 relative overflow-hidden active:scale-95";
+            const variants = {
+                primary: "bg-white text-black hover:bg-[#eee] shadow-lg",
+                secondary: "bg-transparent border border-white/20 text-white hover:bg-white/5"
+            };
+            
+            return (
+                <button onClick={onClick} className={`${baseClass} ${variants[variant]}`}>
+                    {children}
+                </button>
+            );
+        };
+
+        const Scanline = () => (
+            <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.03]" 
+                 style={{ background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))', backgroundSize: '100% 2px, 3px 100%' }} />
+        );
+
+        const DotGrid = () => (
+            <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.05]" 
+                 style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+        );
+
+        const Container = ({ children, className = "", id }) => (
+            <div id={id} className={`max-w-7xl mx-auto px-8 py-16 ${className}`}>
+                {children}
+            </div>
+        );
+
+        const Tag = ({ children }) => (
+            <span className="text-[9px] font-mono border border-white/20 px-2 py-0.5 rounded uppercase tracking-widest text-gray-500 mr-2">
+                {children}
+            </span>
+        );
+
+        // ============================================
+        // WEBSITE COMPONENT
+        // ============================================
+
+        const Website = () => {
+            return (
+                <div className="bg-black text-white selection:bg-white selection:text-black min-h-screen relative font-inter scroll-smooth">
+                    <Scanline />
+                    <DotGrid />
+
+                    {/* Hero */}
+                    <section id="top" className="h-screen flex flex-col items-center justify-center text-center px-8 relative overflow-hidden">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-white/[0.015] rounded-full blur-[140px] pointer-events-none" />
+                        
+                        <div className="relative z-10 space-y-4 max-w-4xl w-full flex flex-col items-center">
+                            <div className="space-y-1 animate-fade-in flex flex-col items-center">
+                                <p className="text-[10px] font-mono opacity-50 tracking-[0.6em] text-gray-600 mb-2 uppercase">{PROJECT_INFO.teamName}</p>
+                                <p className="text-[9px] uppercase tracking-[0.5em] text-gray-500 font-mono m-0 opacity-40">
+                                    {PROJECT_INFO.organization}
+                                </p>
+                                <p className="text-[9px] uppercase tracking-[0.2em] text-gray-400 font-mono m-0 opacity-40">
+                                    presents
+                                </p>
+                            </div>
+                            
+                            <div className="relative flex justify-center items-center pt-8 animate-[scaleIn_0.8s_ease-out] w-full">
+                                <div className="relative inline-block text-center">
+                                    <svg className="absolute -top-10 -left-12 w-full h-[140%] pointer-events-none z-20 overflow-visible opacity-50" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M50 50C150 150 450 150 850 70" stroke="#3B82F6" strokeWidth="3" strokeLinecap="round" className="animate-[draw_4s_ease-out_forwards]" />
+                                    </svg>
+
+                                    <DotTitle className="text-7xl md:text-[10vw] lg:text-[11rem] leading-none tracking-tighter m-0 whitespace-nowrap">
+                                        {PROJECT_INFO.title}
+                                    </DotTitle>
+                                    <a 
+                                        href={PROJECT_INFO.appLink} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="absolute bottom-[0.18em] -right-2 md:-right-4 hover:scale-125 transition-transform"
+                                    >
+                                        <div className="w-1.5 h-1.5 md:w-3 md:h-3 bg-red-600 rounded-full shadow-[0_0_15px_rgba(255,0,0,0.6)] opacity-70" />
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <p className="text-lg md:text-2xl font-light text-gray-500 tracking-[0.2em] uppercase max-w-3xl mx-auto opacity-0 animate-[fadeIn_1s_ease-out_0.3s_forwards] pt-4">
+                                {PROJECT_INFO.tagline}
+                            </p>
+                            
+                            <div className="flex flex-wrap gap-4 justify-center pt-10 opacity-0 animate-[fadeIn_1s_ease-out_0.6s_forwards]">
+                                <Button variant="primary" onClick={() => window.open(PROJECT_INFO.appLink)}>Enter Interface</Button>
+                                <Button variant="secondary" onClick={() => window.open(PROJECT_INFO.demoLink)}>Project Reel</Button>
+                            </div>
+                        </div>
+
+                        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-10">
+                            <span className="text-[8px] font-mono uppercase tracking-[0.4em]">Scroll to Explore</span>
+                            <div className="w-[1px] h-10 bg-white" />
+                        </div>
+                    </section>
+
+                    {/* Video Player Section - Between Scroll and Philosophy */}
+                    {PROJECT_INFO.videoLink && (
+                        <section className="py-20 px-8">
+                            <Container>
+                                <div className="flex justify-center items-center">
+                                    <div className="w-full max-w-5xl glass rounded-3xl nothing-border p-6 overflow-hidden animate-fade-in">
+                                        <div className="relative w-full" style={{ paddingBottom: '56.25%', minHeight: '500px' }}>
+                                            <iframe
+                                                src={PROJECT_INFO.videoLink}
+                                                className="absolute top-0 left-0 w-full h-full rounded-2xl"
+                                                frameBorder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </Container>
+                        </section>
+                    )}
+
+                    {/* Core Logic Section */}
+                    <Container id="core-logic" className="py-32">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+                            <div className="md:col-span-4 space-y-8">
+                                <Tag>The Philosophy</Tag>
+                                <h3 className="text-5xl font-bold leading-tight uppercase">Simplicity <br/> meets <br/> Precision.</h3>
+                                <p className="text-gray-500 text-lg leading-relaxed italic">
+                                    "Brain tumors don't wait. Neither should the diagnosis."
+                                </p>
+                            </div>
+                            <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
+                                <Card>
+                                    <h4 className="text-xl font-bold uppercase mb-4 tracking-tighter">The Gap</h4>
+                                    <p className="text-gray-400 text-sm leading-relaxed">Lack of medical experts in underserved regions leads to delayed treatment. TumorSense bridges this through automation.</p>
+                                </Card>
+                                <Card>
+                                    <h4 className="text-xl font-bold uppercase mb-4 tracking-tighter">The Solution</h4>
+                                    <p className="text-gray-400 text-sm leading-relaxed">A digital radiologist built on Xception architecture, classifying Glioma, Meningioma, and Pituitary tumors in seconds.</p>
+                                </Card>
+                            </div>
+                        </div>
+                    </Container>
+
+                    {/* Workflow Visualization */}
+                    <section id="flow" className="bg-white/[0.01] py-32 border-y border-white/5">
+                        <Container>
+                            <div className="flex items-center gap-4 mb-16">
+                                <Tag>system architecture / flow</Tag>
+                                <div className="h-[1px] flex-grow bg-white/10" />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+                                {WORKFLOW_STEPS.map((step, i) => (
+                                    <div key={i} className="relative p-6 group">
+                                        <span className="text-6xl font-bold text-white/10 absolute -top-4 -left-2 transition-colors group-hover:text-white/30">{step.step}</span>
+                                        <h5 className="text-lg font-bold uppercase mb-3 relative z-10">{step.title}</h5>
+                                        <p className="text-xs text-gray-500 leading-relaxed relative z-10">{step.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </Container>
+                    </section>
+
+                    {/* Intelligence Deep Dive */}
+                    <Container id="intelligence" className="py-32">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+                            <div className="space-y-12">
+                                <div>
+                                    <Tag>The AI Brain</Tag>
+                                    <DotTitle className="text-5xl mt-6 uppercase mb-4">{MODEL_DETAILS.base}</DotTitle>
+                                    <p className="text-gray-400 mt-4">Trained on {TRAINING_DATA.source}, our model utilizes sophisticated transfer learning to achieve medical-grade inference speeds.</p>
+                                </div>
+                                <div className="space-y-6">
+                                    {MODEL_DETAILS.layers.map((layer, i) => (
+                                        <div key={i} className="flex items-center gap-4 group">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500 group-hover:scale-150 transition-transform" />
+                                            <p className="text-xs uppercase tracking-widest text-gray-500 group-hover:text-white transition-colors">{layer}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <Card className="aspect-square flex flex-col justify-center items-center text-center space-y-8 p-16">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-red-500/20 blur-3xl rounded-full" />
+                                    <div className="text-9xl font-bold relative z-10">99<span className="text-red-500 text-6xl">%</span></div>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-[10px] font-mono text-gray-600 uppercase tracking-[0.4em]">Validation Accuracy</p>
+                                    <div className="flex gap-1 justify-center">
+                                        {[1,2,3,4,5,6,7,8,9,10].map(i => <div key={i} className={`h-1 w-4 ${i < 10 ? 'bg-white' : 'bg-white/20'}`} />)}
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    </Container>
+
+                    {/* Team Section */}
+                    <Container id="team" className="py-32">
+                        <div className="flex flex-col items-center mb-24">
+                            <Tag>The Architects</Tag>
+                            <DotTitle className="text-6xl mt-4 uppercase">TEAM SUPERKINGS</DotTitle>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
+                            {TEAM_MEMBERS.map((member, i) => (
+                                <div key={i} className="group cursor-default space-y-8">
+                                    <div className="relative aspect-[4/5] bg-white/[0.03] rounded-[2rem] overflow-hidden border border-white/10 transition-all group-hover:bg-white/[0.06] group-hover:-translate-y-2 duration-700">
+                                        {member.image ? (
+                                            <img 
+                                                src={member.image} 
+                                                alt={member.name} 
+                                                className="w-full h-full object-crop grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <span className="text-[8px] font-mono tracking-[0.5em] uppercase text-gray-500">AUTHORIZED PERSONNEL</span>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
+                                            <div className="text-[10px] text-gray-600 font-mono tracking-tighter">
+                                                ID_{String(i+1).padStart(2,'0')}
+                                            </div>
+                                            <div className="h-[1px] w-12 bg-white/20 group-hover:w-full transition-all duration-700 origin-right" />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3 px-2">
+                                        <div className="space-y-1">
+                                            <h5 className="text-3xl font-extrabold uppercase tracking-tight leading-none">{member.name}</h5>
+                                            <p className="text-red-600 text-[10px] font-mono uppercase tracking-[0.4em]">{member.role}</p>
+                                        </div>
+                                        
+                                        <div className="pt-2 border-t border-white/5">
+                                            <p className="text-gray-400 text-sm leading-relaxed italic opacity-80 group-hover:opacity-100 transition-opacity">
+                                                "{member.description}"
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Container>
+
+                    {/* Footer */}
+                    <footer className="pt-32 pb-16 border-t border-white/5 mt-20">
+                        <Container>
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+                                <div className="space-y-6">
+                                    <div className="flex items-center">
+                                        <DotTitle className="text-3xl mb-0 leading-none">{PROJECT_INFO.title}</DotTitle>
+                                        <RedDot />
+                                    </div>
+                                    <p className="text-[10px] font-mono text-gray-600 max-w-xs uppercase leading-loose opacity-60">
+                                        {PROJECT_INFO.organization} <br/>
+                                        {PROJECT_INFO.subject} <br/>
+                                        {PROJECT_INFO.academicYear}
+                                    </p>
+                                </div>
+                                <div className="flex flex-wrap gap-16">
+                                    <div className="space-y-6">
+                                        <p className="text-[11px] font-mono text-gray-400 uppercase tracking-widest opacity-60">NAVIGATION</p>
+                                        <div className="flex flex-col gap-3 text-sm font-semibold">
+                                            <a href={PROJECT_INFO.appLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Interface</a>
+                                            <a href={PROJECT_INFO.datasetLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Dataset</a>
+                                            <a href="#intelligence" className="hover:text-red-500 transition-colors">Performance</a>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-6">
+                                        <p className="text-[11px] font-mono text-gray-400 uppercase tracking-widest opacity-60">CONNECT</p>
+                                        <div className="flex flex-col gap-3 text-sm font-semibold">
+                                            <a href={PROJECT_INFO.codeLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Model Training Code</a>
+                                            <a href={PROJECT_INFO.documentationLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Documentation</a>
+                                            <a href={PROJECT_INFO.demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Project Reel</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-mono text-gray-700 uppercase tracking-widest">
+                                <span className="text-white/44 uppercase">{PROJECT_INFO.teamName}</span>
+                                <span className="opacity-45">© 2025 TUMORSENSE UNIT // ISAS AL SEEB</span>
+                                <span className="opacity-45 uppercase">All Systems Nominal</span>
+                            </div>
+                        </Container>
+                    </footer>
+                </div>
+            );
+        };
+
+        // ============================================
+        // PRESENTATION COMPONENT
+        // ============================================
+
+        const Presentation = () => {
+            const [currentSlide, setCurrentSlide] = React.useState(0);
+
+            const slides = [
+                {
+                    title: "Slide 1: TITLE PAGE",
+                    content: (
+                        <div className="flex flex-col items-center justify-center text-center py-20 animate-fade-in">
+                            <p className="text-[10px] font-mono tracking-[0.6em] text-gray-600 mb-2 uppercase">{PROJECT_INFO.teamName}</p>
+                            <p className="text-[10px] font-mono tracking-[0.5em] text-gray-700 mb-2 uppercase">{PROJECT_INFO.organization}</p>
+                            <p className="text-[10px] font-mono tracking-[0.2em] text-gray-700 mb-8 uppercase text-center w-full">presents</p>
+                            <div className="relative inline-flex items-center">
+                                <DotTitle className="text-8xl md:text-9xl mb-4 leading-none">{PROJECT_INFO.title}</DotTitle>
+                                <RedDot />
+                            </div>
+                            <p className="text-xl md:text-2xl text-gray-400 font-light tracking-widest uppercase mb-16">{PROJECT_INFO.tagline}</p>
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-left border-t border-white/10 pt-12">
+                                <div>
+                                    <p className="text-[10px] text-gray-600 mb-1 uppercase font-mono">Subject</p>
+                                    <p className="text-sm font-medium">{PROJECT_INFO.subject}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-gray-600 mb-1 uppercase font-mono">Academic Year</p>
+                                    <p className="text-sm font-medium">{PROJECT_INFO.academicYear}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-gray-600 mb-1 uppercase font-mono">Mentor</p>
+                                    <p className="text-sm font-medium">{PROJECT_INFO.mentor}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-gray-600 mb-1 uppercase font-mono">Build Status</p>
+                                    <p className="text-sm font-medium text-red-500">STABLE v1.0</p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Slide 2: MEET THE TEAM",
+                    content: (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in">
+                            {TEAM_MEMBERS.map((m, i) => (
+                                <Card key={i} className="flex flex-col h-full">
+                                    <h3 className="font-bold text-lg mb-1 uppercase tracking-tighter">{m.name}</h3>
+                                    <p className="text-red-500 text-[10px] font-mono mb-4 uppercase tracking-[0.2em]">{m.role}</p>
+                                    <p className="text-gray-500 text-xs leading-relaxed flex-grow italic">"{m.description}"</p>
+                                </Card>
+                            ))}
+                        </div>
+                    )
+                },
+                {
+                    title: "Slide 3: PROBLEM STATEMENT",
+                    content: (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in">
+                            <div className="space-y-4">
+                                <Tag>The Issue</Tag>
+                                <h3 className="text-2xl font-bold uppercase">Neurological Interference</h3>
+                                <p className="text-gray-400 text-sm leading-relaxed">Brain tumors interfere with essential neurological functions. In oncology, <b>timely diagnosis</b> is the single most critical factor for patient survival.</p>
+                            </div>
+                            <div className="space-y-4">
+                                <Tag>The Gap</Tag>
+                                <h3 className="text-2xl font-bold uppercase">Inaccessible Expertise</h3>
+                                <p className="text-gray-400 text-sm leading-relaxed">Accurate MRI interpretation requires extreme medical expertise, which is often <b>scarce or unavailable</b> in remote and underserved global regions.</p>
+                            </div>
+                            <div className="space-y-4 border-l border-white/10 pl-8">
+                                <Tag>The AI Solution</Tag>
+                                <h3 className="text-2xl font-bold uppercase">Consistency & Speed</h3>
+                                <p className="text-gray-400 text-sm leading-relaxed">Automating analysis via deep learning provides <b>consistent, near-instant, and accessible</b> detection for clinics everywhere.</p>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Slide 4: PROJECT OVERVIEW",
+                    content: (
+                        <div className="space-y-12 animate-fade-in">
+                            <div className="text-center max-w-2xl mx-auto">
+                                <h3 className="text-3xl font-bold uppercase mb-4">Multi-Class Classification</h3>
+                                <p className="text-gray-400 italic">One system to identify Glioma, Meningioma, Pituitary, or No Tumor with clinical accuracy.</p>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                                {TECH_STACK.map((item, i) => (
+                                    <div key={i} className="text-center p-6 glass rounded-2xl border border-white/5">
+                                        <p className="text-[10px] font-mono text-gray-500 mb-2 uppercase">{item.name}</p>
+                                        <p className="text-lg font-bold mb-1">{item.tech}</p>
+                                        <p className="text-[10px] text-red-500 font-mono uppercase">{item.host || item.model || item.utility}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Slide 5: SYSTEM ARCHITECTURE",
+                    content: (
+                        <div className="flex flex-col space-y-4 animate-fade-in">
+                            {WORKFLOW_STEPS.map((step, i) => (
+                                <div key={i} className="flex items-center gap-8 group">
+                                    <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center font-mono text-xs group-hover:bg-white group-hover:text-black transition-all">
+                                        {step.step}
+                                    </div>
+                                    <div className="flex-grow border-b border-white/5 pb-4 group-last:border-none">
+                                        <h4 className="text-xl font-bold uppercase tracking-tight">{step.title}</h4>
+                                        <p className="text-gray-500 text-sm">{step.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                },
+                {
+                    title: "Slide 6: MODEL ARCHITECTURE",
+                    content: (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center animate-fade-in">
+                            <div>
+                                <h3 className="text-2xl font-bold mb-6 uppercase">The AI Brain: {MODEL_DETAILS.base}</h3>
+                                <ul className="space-y-4">
+                                    {MODEL_DETAILS.layers.map((layer, i) => (
+                                        <li key={i} className="flex gap-4 text-sm text-gray-400">
+                                            <span className="text-white">//</span> {layer}
+                                        </li>
+                                    ))}
+                                    <li className="pt-4 border-t border-white/10 text-red-500 font-mono text-xs">
+                                        OPTIMIZER: {MODEL_DETAILS.optimizer}
+                                    </li>
+                                </ul>
+                            </div>
+                            <Card className="font-mono text-[10px] leading-tight text-gray-400 overflow-hidden bg-black/40">
+                                <pre className="p-4">{TRAINING_CODE_SNIPPET}</pre>
+                            </Card>
+                        </div>
+                    )
+                },
+                {
+                    title: "Slide 7: TRAINING PROCESS",
+                    content: (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
+                            <div className="space-y-6">
+                                <div>
+                                    <Tag>Source</Tag>
+                                    <p className="text-sm mt-2">{TRAINING_DATA.source}</p>
+                                </div>
+                                <div>
+                                    <Tag>Preprocessing</Tag>
+                                    <p className="text-sm mt-2">{TRAINING_DATA.augmentation}</p>
+                                </div>
+                                <div>
+                                    <Tag>Specs</Tag>
+                                    <p className="text-sm mt-2">{TRAINING_DATA.specs}</p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col justify-center items-center text-center p-12 border border-dotted border-white/20 rounded-3xl">
+                                <div className="text-6xl font-bold mb-2">99<span className="text-red-500">%</span></div>
+                                <p className="text-xs font-mono uppercase tracking-widest text-gray-500">Overall Accuracy Achieved</p>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Slide 8: PERFORMANCE METRICS",
+                    content: (
+                        <div className="flex flex-col h-full space-y-8 animate-fade-in">
+                            <div className="grid grid-cols-4 gap-4">
+                                {Object.entries(TRAINING_DATA.metrics).map(([key, val], i) => (
+                                    <div key={i} className="text-center">
+                                        <p className="text-[10px] text-gray-500 uppercase font-mono mb-1">{key.replace(/([A-Z])/g, ' $1')}</p>
+                                        <p className="text-3xl font-bold">{val}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex-grow flex items-center justify-center max-h-64">
+                                <svg width="200" height="200" viewBox="0 0 200 200" className="transform -rotate-90">
+                                    {/* Simple pie chart representing tumor distribution */}
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#333" strokeWidth="40" />
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#fff" strokeWidth="40" 
+                                            strokeDasharray={`${30 * 5.026} ${100 * 5.026}`} />
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#666" strokeWidth="40" 
+                                            strokeDasharray={`${25 * 5.026} ${100 * 5.026}`} strokeDashoffset={`-${30 * 5.026}`} />
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#333" strokeWidth="40" 
+                                            strokeDasharray={`${35 * 5.026} ${100 * 5.026}`} strokeDashoffset={`-${55 * 5.026}`} />
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#ff0000" strokeWidth="40" 
+                                            strokeDasharray={`${10 * 5.026} ${100 * 5.026}`} strokeDashoffset={`-${90 * 5.026}`} />
+                                </svg>
+                            </div>
+                            <div className="text-center p-4 glass rounded-xl">
+                                <p className="text-xs text-gray-400 italic">"Think of it as a Highly Trained Digital Radiologist. Base model = Education. Custom Layers = Specialization."</p>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Slide 9: CONCLUSION & DEMO",
+                    content: (
+                        <div className="flex flex-col items-center justify-center text-center space-y-12 animate-fade-in">
+                            <div className="space-y-4">
+                                <h3 className="text-4xl font-bold uppercase italic">99% Reliability Reached.</h3>
+                                <p className="text-gray-500 max-w-lg">The model has been stabilized for web-scale inference and is ready for clinical trial phase simulation.</p>
+                            </div>
+                            <div className="flex flex-wrap gap-6 justify-center">
+                                <Button variant="primary" onClick={() => window.open(PROJECT_INFO.appLink)}>Live Web App</Button>
+                                <Button variant="secondary" onClick={() => window.open(PROJECT_INFO.demoLink)}>Video Demo</Button>
+                            </div>
+                            <div className="pt-12 border-t border-white/10 w-full flex justify-between items-center text-[10px] font-mono text-gray-600">
+                                <span>PROJECT BY: {PROJECT_INFO.teamName}</span>
+                                <span>EST. 2025</span>
+                                <span>CBSE AI CAPSTONE PROJECT</span>
+                            </div>
+                        </div>
+                    )
+                }
+            ];
+
+            const next = () => setCurrentSlide((s) => (s + 1) % slides.length);
+            const prev = () => setCurrentSlide((s) => (s - 1 + slides.length) % slides.length);
+
+            React.useEffect(() => {
+                const handleKey = (e) => {
+                    if (e.key === 'ArrowRight' || e.key === ' ') {
+                        setCurrentSlide((s) => (s + 1) % slides.length);
+                    }
+                    if (e.key === 'ArrowLeft') {
+                        setCurrentSlide((s) => (s - 1 + slides.length) % slides.length);
+                    }
+                };
+                window.addEventListener('keydown', handleKey);
+                return () => window.removeEventListener('keydown', handleKey);
+            }, [slides.length]);
+
+            return (
+                <div className="min-h-screen bg-black flex flex-col justify-between p-12 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+                        <DotTitle className="text-9xl m-0">0{currentSlide + 1}</DotTitle>
+                    </div>
+
+                    <div className="flex justify-between items-start relative z-10">
+                        <div className="animate-[slideRight_0.5s_ease-out]">
+                            <p className="text-[10px] text-gray-600 font-mono tracking-[0.3em] uppercase mb-2">{PROJECT_INFO.title} // DECK</p>
+                            <DotTitle className="text-3xl m-0 uppercase leading-none">{slides[currentSlide].title}</DotTitle>
+                        </div>
+                        <div className="text-[10px] font-mono text-gray-600 tracking-tighter">
+                            PAGE [{String(currentSlide + 1).padStart(2, '0')} // {String(slides.length).padStart(2, '0')}]
+                        </div>
+                    </div>
+
+                    <div className="flex-grow flex items-center justify-center max-w-5xl mx-auto w-full relative z-10">
+                        <div key={currentSlide} className="w-full">
+                            {slides[currentSlide].content}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between items-center relative z-10">
+                        <div className="flex gap-4 items-center">
+                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                            <span className="text-[10px] font-mono text-gray-600 uppercase tracking-widest">{PROJECT_INFO.title}</span>
+                        </div>
+                        <div className="flex gap-8">
+                            <button onClick={prev} className="hover:text-white text-gray-600 transition-colors uppercase text-[10px] font-mono tracking-widest">Back</button>
+                            <button onClick={next} className="hover:text-white text-gray-600 transition-colors uppercase text-[10px] font-mono tracking-widest">Forward</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ============================================
+        // MAIN APP COMPONENT
+        // ============================================
+
+        const App = () => {
+            const [viewMode, setViewMode] = React.useState('website');
+
+            return (
+                <div className="bg-black min-h-screen">
+                    {/* Dynamic Mode Switcher */}
+                    <div className="fixed top-6 right-6 z-50 flex gap-2 glass p-1 rounded-full nothing-border">
+                        <button 
+                            onClick={() => setViewMode('website')}
+                            className={`px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${viewMode === 'website' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            Website
+                        </button>
+                        <button 
+                            onClick={() => setViewMode('presentation')}
+                            className={`px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${viewMode === 'presentation' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            Deck
+                        </button>
+                    </div>
+
+                    {/* Main Content Area */}
+                    <main className="transition-opacity duration-500">
+                        {viewMode === 'website' ? <Website /> : <Presentation />}
+                    </main>
+                </div>
+            );
+        };
+
+        // ============================================
+        // RENDER APP
+        // ============================================
+
+        // Wait for everything to load
+        function waitForReact() {
+            if (typeof React !== 'undefined' && typeof ReactDOM !== 'undefined' && typeof Babel !== 'undefined') {
+                // Small delay to ensure Babel is ready
+                setTimeout(initApp, 100);
+            } else {
+                setTimeout(waitForReact, 50);
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', waitForReact);
+        } else {
+            waitForReact();
+        }
+
+        function initApp() {
+            try {
+                // Check if React is loaded
+                if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+                    throw new Error('React or ReactDOM not loaded. Check CDN links.');
+                }
+                
+                const rootElement = document.getElementById('root');
+                if (!rootElement) {
+                    throw new Error('Root element not found!');
+                }
+                
+                // Use React 18 createRoot API if available, otherwise fallback to render
+                if (ReactDOM.createRoot) {
+                    const root = ReactDOM.createRoot(rootElement);
+                    root.render(React.createElement(App));
+                } else {
+                    // Fallback for older React versions
+                    ReactDOM.render(React.createElement(App), rootElement);
+                }
+            } catch (error) {
+                console.error('Error rendering app:', error);
+                const rootEl = document.getElementById('root');
+                if (rootEl) {
+                    rootEl.innerHTML = `
+                        <div style="color: white; padding: 20px; text-align: center; font-family: monospace;">
+                            <h1 style="color: #ff0000;">Error Loading Application</h1>
+                            <p style="margin: 10px 0;">${error.message}</p>
+                            <p style="font-size: 12px; margin-top: 20px; color: #888;">Check browser console (F12) for details</p>
+                            <p style="font-size: 10px; margin-top: 10px; color: #666;">React loaded: ${typeof React !== 'undefined'}</p>
+                            <p style="font-size: 10px; color: #666;">ReactDOM loaded: ${typeof ReactDOM !== 'undefined'}</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+
