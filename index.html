@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TumorSense | Nothing Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .dot-matrix {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nothing-border {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+        .red-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(1.1); filter: blur(20px); }
+          to { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+        @keyframes draw {
+          from { stroke-dasharray: 0 1000; }
+          to { stroke-dasharray: 1000 0; }
+        }
+        @keyframes slideRight {
+          from { opacity: 0; transform: translateX(-20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // ==================== CONSTANTS ====================
+        const PROJECT_INFO = {
+          title: "TUMORSENSE",
+          tagline: "AI-Powered Brain Tumor Detection",
+          organization: "INDIAN SCHOOL AL SEEB, SULTANATE OF OMAN",
+          teamName: "Superkings",
+          subject: "Artificial Intelligence (Capstone Project)",
+          academicYear: "2025 – 2026",
+          mentor: "Mrs. Shelmi K P",
+          appLink: "https://health-ai-seven.vercel.app/",
+          demoLink: "https://drive.google.com/file/d/1txo6RTWym7viTHOKnayzkD9LuiHrUxTD/view",
+          datasetLink: "https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset",
+          codeLink: "https://colab.research.google.com/drive/1FxMoBoSdw4-tPDjwneqVqZsWpYuBics6?usp=sharing",
+          documentationLink: "https://drive.google.com/file/d/1x5vGNnFcyptJWf0kpdSgdNIzKer1_oeq/view?usp=drive_link"
+        };
+
+        const PICTURES = {
+          goutham: "6.png",
+          ridwin: "3.png",
+          jeyapranesh: "5.png",
+          aazif: "1.png",
+          rakesh: "2.png",
+          sharan: "4.png"
+        };
+
+        const TEAM_MEMBERS = [
+          { 
+            name: "Goutham Krishna", 
+            role: "Project Lead & ML Engineer", 
+            description: "I am Goutham, I led the architecture and model optimization for TumorSense. My goal was to create a digital radiologist that works anywhere.",
+            image: PICTURES.goutham
+          },
+          { 
+            name: "Ridwin Shamim", 
+            role: "Frontend Lead & UI/UX Designer", 
+            description: "I'm Ridwin, I crafted the visual identity and user interface. I believe that complex AI tools should be beautiful and intuitive.",
+            image: PICTURES.ridwin
+          },
+          { 
+            name: "Jeyapranesh A.S", 
+            role: "Backend Developer & Data Engineer", 
+            description: "I am Jeyapranesh, I managed the pipeline and model integration. Ensuring high performance and reliability was my top priority.",
+            image: PICTURES.jeyapranesh
+          },
+          { 
+            name: "Mohammed Aazif K A", 
+            role: "Documentation Lead", 
+            description: "I am Aazif, I handled the technical documentation and report generation. Clear communication is the key to a successful project.",
+            image: PICTURES.aazif
+          },
+          { 
+            name: "Rakesh Radhakrishnan", 
+            role: "Presentation Specialist", 
+            description: "I am Rakesh, I focused on visual communication and project presentation. I love making complex data easy to understand.",
+            image: PICTURES.rakesh
+          },
+          { 
+            name: "Sharan S", 
+            role: "Research & Data Lead", 
+            description: "I am Sharan, I led the data collection and problem definition phase. Researching brain tumor types helped us build a better model.",
+            image: PICTURES.sharan
+          }
+        ];
+
+        const FRONTEND_STACK = [
+          { name: "React", tech: "Component-based UI", desc: "Dynamically manages content without page reloads for a seamless app experience." },
+          { name: "Vite", tech: "Build System", desc: "Ensures rapid development and optimized production builds for top-tier performance." },
+          { name: "Vercel", tech: "Global Deployment", desc: "Edge-delivery platform for automatic scaling and high-availability global hosting." }
+        ];
+
+        const BACKEND_STACK = [
+          { name: "Flask", tech: "Logic Core", desc: "Lightweight Python framework handling API requests and model communication." },
+          { name: "Gunicorn", tech: "Server Management", desc: "Production-grade WSGI server managing concurrent connections for system stability." },
+          { name: "Render", tech: "Cloud Infrastructure", desc: "Hosting platform with automatic scaling and continuous deployment from version control." }
+        ];
+
+        const CONFUSION_MATRIX_DATA = {
+          labels: ["Glioma", "Meningioma", "No Tumor", "Pituitary"],
+          rows: [
+            [148, 2, 0, 0],
+            [1, 151, 0, 1],
+            [0, 0, 203, 0],
+            [0, 1, 0, 149]
+          ],
+          analysis: [
+            { label: "Glioma", result: "148 / 150 identified" },
+            { label: "Meningioma", result: "151 / 153 identified" },
+            { label: "Pituitary", result: "149 / 150 identified" },
+            { label: "No Tumor", result: "203 / 203 identified (100%)" }
+          ]
+        };
+
+        const WORKFLOW_STEPS = [
+          { step: "01", title: "Upload", desc: "User uploads MRI image through the React interface." },
+          { step: "02", title: "Transmission", desc: "Image is securely sent to Flask API on Render.com." },
+          { step: "03", title: "Pre-process", desc: "Backend resizes to 299x299 pixels and normalizes values." },
+          { step: "04", title: "Inference", desc: "TFLite model performs multi-class classification." },
+          { step: "05", title: "Results", desc: "Diagnosis and confidence levels are displayed instantly." }
+        ];
+
+        const MODEL_DETAILS = {
+          base: "Xception (Transfer Learning)",
+          layers: [
+            "Flatten layer (Feature conversion to 1D)",
+            "Dropout layers (0.3 and 0.25) for Overfit Prevention",
+            "Dense layer (128 neurons, ReLU activation)",
+            "Final Softmax layer (4-class classification)"
+          ],
+          optimizer: "Adamax (Learning rate: 0.001)"
+        };
+
+        const TRAINING_DATA = {
+          source: "Masoud Nickparvar Brain Tumor MRI Dataset (Kaggle)",
+          augmentation: "Random brightness adjustments (0.8 - 1.2)",
+          specs: "10 Epochs, Batch Size: 32",
+          metrics: {
+            accuracy: "99%",
+            noTumorAcc: "100%",
+            precision: "99%",
+            recall: "99%"
+          }
+        };
+
+        const TRAINING_CODE_SNIPPET = `# Xception Implementation
+base_model = tf.keras.applications.Xception(
+    weights='imagenet', include_top=False,
+    input_shape=(299, 299, 3), pooling='max'
+)
+base_model.trainable = False
+
+model = Sequential([
+    base_model,
+    Flatten(),
+    Dropout(0.3),
+    Dense(128, activation='relu'),
+    Dropout(0.25),
+    Dense(4, activation='softmax')
+])
+
+model.compile(
+    optimizer=Adamax(learning_rate=0.001),
+    loss='categorical_crossentropy',
+    metrics=['accuracy', Precision(), Recall()]
+)`;
+
+        // ==================== UI COMPONENTS ====================
+        const RedDot = () => <span className="red-dot ml-2 mb-1 shadow-[0_0_8px_rgba(255,0,0,0.6)]" />;
+
+        const Card = ({ children, className = "" }) => (
+          <div className={`glass p-8 rounded-3xl nothing-border relative overflow-hidden group transition-all duration-500 hover:scale-[1.01] ${className}`}>
+            <div className="absolute inset-0 bg-white/[0.01] group-hover:bg-white/[0.03] transition-colors" />
+            <div className="relative z-10">{children}</div>
+          </div>
+        );
+
+        const DotTitle = ({ children, className = "" }) => (
+          <h2 className={`dot-matrix font-bold tracking-tight ${className}`}>
+            {children}
+          </h2>
+        );
+
+        const Button = ({ onClick, children, variant = 'primary' }) => {
+          const baseClass = "px-8 py-3 rounded-full font-medium transition-all duration-300 uppercase text-[10px] tracking-[0.2em] flex items-center justify-center gap-2 relative overflow-hidden active:scale-95";
+          const variants = {
+            primary: "bg-white text-black hover:bg-[#eee] shadow-lg",
+            secondary: "bg-transparent border border-white/20 text-white hover:bg-white/5"
+          };
+          
+          return (
+            <button onClick={onClick} className={`${baseClass} ${variants[variant]}`}>
+              {children}
+            </button>
+          );
+        };
+
+        const Scanline = () => (
+          <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.03]" 
+               style={{ background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))', backgroundSize: '100% 2px, 3px 100%' }} />
+        );
+
+        const DotGrid = () => (
+          <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.05]" 
+               style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+        );
+
+        const Container = ({ children, className = "", id }) => (
+          <div id={id} className={`max-w-7xl mx-auto px-8 py-16 ${className}`}>
+            {children}
+          </div>
+        );
+
+        const Tag = ({ children }) => (
+          <span className="text-[9px] font-mono border border-white/20 px-2 py-0.5 rounded uppercase tracking-widest text-gray-500 mr-2">
+            {children}
+          </span>
+        );
+
+        // ==================== WEBSITE COMPONENT ====================
+const Website = () => {
+            return (
+                <div className="bg-black text-white selection:bg-white selection:text-black min-h-screen relative font-inter scroll-smooth">
+                    <Scanline />
+                    <DotGrid />
+
+                    {/* Hero */}
+                    <section id="top" className="h-screen flex flex-col items-center justify-center text-center px-8 relative overflow-hidden">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-white/[0.015] rounded-full blur-[140px] pointer-events-none" />
+                        
+                        <div className="relative z-10 space-y-4 max-w-4xl w-full flex flex-col items-center">
+                            <div className="space-y-1 animate-fade-in flex flex-col items-center">
+                                <p className="text-[10px] font-mono opacity-50 tracking-[0.6em] text-gray-600 mb-2 uppercase">{PROJECT_INFO.teamName}</p>
+                                <p className="text-[9px] uppercase tracking-[0.5em] text-gray-500 font-mono m-0 opacity-40">
+                                    {PROJECT_INFO.organization}
+                                </p>
+                                <p className="text-[9px] uppercase tracking-[0.2em] text-gray-400 font-mono m-0 opacity-40">
+                                    presents
+                                </p>
+                            </div>
+                            
+                            <div className="relative flex justify-center items-center pt-8 animate-[scaleIn_0.8s_ease-out] w-full">
+                                <div className="relative inline-block text-center">
+                                    <svg className="absolute -top-10 -left-12 w-full h-[140%] pointer-events-none z-20 overflow-visible opacity-50" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M50 50C150 150 450 150 850 70" stroke="#3B82F6" strokeWidth="3" strokeLinecap="round" className="animate-[draw_4s_ease-out_forwards]" />
+                                    </svg>
+
+                                    <DotTitle className="text-7xl md:text-[10vw] lg:text-[11rem] leading-none tracking-tighter m-0 whitespace-nowrap">
+                                        {PROJECT_INFO.title}
+                                    </DotTitle>
+                                    <a 
+                                        href={PROJECT_INFO.appLink} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="absolute bottom-[0.18em] -right-2 md:-right-4 hover:scale-125 transition-transform"
+                                    >
+                                        <div className="w-1.5 h-1.5 md:w-3 md:h-3 bg-red-600 rounded-full shadow-[0_0_15px_rgba(255,0,0,0.6)] opacity-70" />
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <p className="text-lg md:text-2xl font-light text-gray-500 tracking-[0.2em] uppercase max-w-3xl mx-auto opacity-0 animate-[fadeIn_1s_ease-out_0.3s_forwards] pt-4">
+                                {PROJECT_INFO.tagline}
+                            </p>
+                            
+                            <div className="flex flex-wrap gap-4 justify-center pt-10 opacity-0 animate-[fadeIn_1s_ease-out_0.6s_forwards]">
+                                <Button variant="primary" onClick={() => window.open(PROJECT_INFO.appLink)}>Enter Interface</Button>
+                                <Button variant="secondary" onClick={() => window.open(PROJECT_INFO.demoLink)}>Project Reel</Button>
+                            </div>
+                        </div>
+
+                        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-10">
+                            <span className="text-[8px] font-mono uppercase tracking-[0.4em]">Scroll to Explore</span>
+                            <div className="w-[1px] h-10 bg-white" />
+                        </div>
+                    </section>
+
+              {/* Infrastructure Section */}
+              <Container className="py-32 border-b border-white/5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-24">
+                    <div className="space-y-12">
+                        <Tag>The Interface</Tag>
+                        <h3 className="text-4xl font-bold uppercase tracking-tighter">React + Vite <br/> Pipeline</h3>
+                        <div className="space-y-8">
+                            {FRONTEND_STACK.map((item, i) => (
+                                <div key={i} className="group">
+                                    <p className="text-red-500 font-mono text-[9px] mb-1 opacity-50 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Frontend Module 0{i+1}</p>
+                                    <h5 className="text-xl font-bold uppercase mb-2">{item.name}</h5>
+                                    <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="space-y-12">
+                        <Tag>The Engine</Tag>
+                        <h3 className="text-4xl font-bold uppercase tracking-tighter">Flask + Gunicorn <br/> Core</h3>
+                        <div className="space-y-8">
+                            {BACKEND_STACK.map((item, i) => (
+                                <div key={i} className="group">
+                                    <p className="text-red-500 font-mono text-[9px] mb-1 opacity-50 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Backend Module 0{i+1}</p>
+                                    <h5 className="text-xl font-bold uppercase mb-2">{item.name}</h5>
+                                    <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+              </Container>
+
+              {/* Performance Analysis Section */}
+              <Container className="py-32 bg-white/[0.01]">
+                <div className="flex flex-col items-center text-center mb-24">
+                    <Tag>Analytical Performance</Tag>
+                    <DotTitle className="text-5xl uppercase mt-4">Clinical Accuracy Report</DotTitle>
+                    <p className="text-gray-500 max-w-2xl mt-4">Statistical validation of the Xception model across 656 distinct MRI test cases.</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+                    <div className="space-y-8">
+                        <h4 className="text-xl font-bold uppercase tracking-tight mb-8">Confusion Matrix</h4>
+                        <div className="glass p-8 rounded-[2rem] border border-white/5">
+                           <div className="grid grid-cols-5 gap-1 text-center font-mono text-[10px]">
+                              <div /> {CONFUSION_MATRIX_DATA.labels.map(l => <div key={l} className="opacity-40 uppercase truncate pb-2">{l}</div>)}
+                              {CONFUSION_MATRIX_DATA.rows.map((row, i) => (
+                                <React.Fragment key={i}>
+                                  <div className="opacity-40 uppercase text-right pr-4 flex items-center justify-end">{CONFUSION_MATRIX_DATA.labels[i]}</div>
+                                  {row.map((val, j) => (
+                                    <div key={j} className={`h-12 flex items-center justify-center rounded-xl text-lg font-bold ${i===j ? 'bg-sky-500/60 text-white' : 'bg-white/5 text-gray-700'}`}>
+                                      {val}
+                                    </div>
+                                  ))}
+                                </React.Fragment>
+                              ))}
+                           </div>
+                        </div>
+                    </div>
+                    <div className="space-y-6 flex flex-col justify-center">
+                        <h4 className="text-xl font-bold uppercase tracking-tight">Dataset Analysis</h4>
+                        <div className="space-y-4">
+                            {CONFUSION_MATRIX_DATA.analysis.map((a, i) => (
+                                <div key={i} className="flex justify-between items-center group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-red-600" />
+                                        <span className="font-bold uppercase tracking-wide">{a.label}</span>
+                                    </div>
+                                    <span className="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">{a.result}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <p className="text-sm text-gray-600 italic leading-relaxed pt-8 border-t border-white/5">
+                           The model performs exceptionally well, with minimal misclassifications between tumor types, which can have overlapping MRI features.
+                        </p>
+                    </div>
+                </div>
+              </Container>
+
+              {/* Core Logic Section */}
+              <Container id="core-logic" className="py-32">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+                    <div className="md:col-span-4 space-y-8">
+                        <Tag>The Philosophy</Tag>
+                        <h3 className="text-5xl font-bold leading-tight uppercase">Simplicity <br/> meets <br/> Precision.</h3>
+                        <p className="text-gray-500 text-lg leading-relaxed italic">
+                            "Brain tumors don't wait. Neither should the diagnosis."
+                        </p>
+                    </div>
+                    <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <Card>
+                            <h4 className="text-xl font-bold uppercase mb-4 tracking-tighter">The Gap</h4>
+                            <p className="text-gray-400 text-sm leading-relaxed">Lack of medical experts in underserved regions leads to delayed treatment. TumorSense bridges this through automation.</p>
+                        </Card>
+                        <Card>
+                            <h4 className="text-xl font-bold uppercase mb-4 tracking-tighter">The Solution</h4>
+                            <p className="text-gray-400 text-sm leading-relaxed">A digital radiologist built on Xception architecture, classifying Glioma, Meningioma, and Pituitary tumors in seconds.</p>
+                        </Card>
+                    </div>
+                </div>
+              </Container>
+
+              {/* Workflow Visualization */}
+              <section id="flow" className="bg-white/[0.01] py-32 border-y border-white/5">
+                <Container>
+                    <div className="flex items-center gap-4 mb-16">
+                        <Tag>system architecture / flow</Tag>
+                        <div className="h-[1px] flex-grow bg-white/10" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+                        {WORKFLOW_STEPS.map((step, i) => (
+                            <div key={i} className="relative p-6 group">
+                                <span className="text-6xl font-bold text-white/10 absolute -top-4 -left-2 transition-colors group-hover:text-white/30">{step.step}</span>
+                                <h5 className="text-lg font-bold uppercase mb-3 relative z-10">{step.title}</h5>
+                                <p className="text-xs text-gray-500 leading-relaxed relative z-10">{step.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </Container>
+              </section>
+
+              {/* Intelligence Deep Dive */}
+              <Container id="intelligence" className="py-32">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+                    <div className="space-y-12">
+                        <div>
+                            <Tag>The AI Brain</Tag>
+                            <DotTitle className="text-5xl mt-6 uppercase mb-4">{MODEL_DETAILS.base}</DotTitle>
+                            <p className="text-gray-400 mt-4">Trained on {TRAINING_DATA.source}, our model utilizes sophisticated transfer learning to achieve medical-grade inference speeds.</p>
+                        </div>
+                        <div className="space-y-6">
+                            {MODEL_DETAILS.layers.map((layer, i) => (
+                                <div key={i} className="flex items-center gap-4 group">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 group-hover:scale-150 transition-transform" />
+                                    <p className="text-xs uppercase tracking-widest text-gray-500 group-hover:text-white transition-colors">{layer}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <Card className="aspect-square flex flex-col justify-center items-center text-center space-y-8 p-16">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-red-500/20 blur-3xl rounded-full" />
+                            <div className="text-9xl font-bold relative z-10">99<span className="text-red-500 text-6xl">%</span></div>
+                        </div>
+                        <div className="space-y-2">
+                            <p className="text-[10px] font-mono text-gray-600 uppercase tracking-[0.4em]">Validation Accuracy</p>
+                            <div className="flex gap-1 justify-center">
+                                {[1,2,3,4,5,6,7,8,9,10].map(i => <div key={i} className={`h-1 w-4 ${i < 10 ? 'bg-white' : 'bg-white/20'}`} />)}
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+              </Container>
+
+              {/* Team Section */}
+              <Container id="team" className="py-32">
+                <div className="flex flex-col items-center mb-24">
+                   <Tag>The Architects</Tag>
+                   <DotTitle className="text-6xl mt-4 uppercase">TEAM SUPERKINGS</DotTitle>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
+                    {TEAM_MEMBERS.map((member, i) => (
+                        <div key={i} className="group cursor-default space-y-8">
+                            <div className="relative aspect-[4/5] bg-white/[0.03] rounded-[2rem] overflow-hidden border border-white/10 transition-all group-hover:bg-white/[0.06] group-hover:-translate-y-2 duration-700">
+                                {member.image ? (
+                                  <img 
+                                    src={member.image} 
+                                    alt={member.name} 
+                                    className="w-full h-full object-crop grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                                  />
+                                ) : (
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                      <span className="text-[8px] font-mono tracking-[0.5em] uppercase text-gray-500">AUTHORIZED PERSONNEL</span>
+                                  </div>
+                                )}
+                                
+                                <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
+                                    <div className="text-[10px] text-gray-600 font-mono tracking-tighter">
+                                        ID_{String(i+1).padStart(2,'0')}
+                                    </div>
+                                    <div className="h-[1px] w-12 bg-white/20 group-hover:w-full transition-all duration-700 origin-right" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 px-2">
+                                <div className="space-y-1">
+                                    <h5 className="text-3xl font-extrabold uppercase tracking-tight leading-none">{member.name}</h5>
+                                    <p className="text-red-600 text-[10px] font-mono uppercase tracking-[0.4em]">{member.role}</p>
+                                </div>
+                                <div className="pt-2 border-t border-white/5">
+                                   <p className="text-gray-400 text-sm leading-relaxed italic opacity-80 group-hover:opacity-100 transition-opacity">
+                                     "{member.description}"
+                                   </p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+              </Container>
+
+              {/* Footer */}
+              <footer className="pt-32 pb-16 border-t border-white/5 mt-20">
+                <Container>
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+                        <div className="space-y-6">
+                            <div className="flex items-center">
+                                <DotTitle className="text-3xl mb-0 leading-none">{PROJECT_INFO.title}</DotTitle>
+                                <RedDot />
+                            </div>
+                            <p className="text-[10px] font-mono text-gray-600 max-w-xs uppercase leading-loose opacity-60">
+                                {PROJECT_INFO.organization} <br/>
+                                {PROJECT_INFO.subject} <br/>
+                                {PROJECT_INFO.academicYear}
+                            </p>
+                        </div>
+                        <div className="flex flex-wrap gap-16">
+                            <div className="space-y-6">
+                                <p className="text-[11px] font-mono text-gray-400 uppercase tracking-widest opacity-60">NAVIGATION</p>
+                                <div className="flex flex-col gap-3 text-sm font-semibold">
+                                    <a href={PROJECT_INFO.appLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Interface</a>
+                                    <a href={PROJECT_INFO.datasetLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Dataset</a>
+                                    <a href="#intelligence" className="hover:text-red-500 transition-colors">Performance</a>
+                                </div>
+                            </div>
+                            <div className="space-y-6">
+                                <p className="text-[11px] font-mono text-gray-400 uppercase tracking-widest opacity-60">CONNECT</p>
+                                <div className="flex flex-col gap-3 text-sm font-semibold">
+                                    <a href={PROJECT_INFO.codeLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Model Training Code</a>
+                                    <a href={PROJECT_INFO.documentationLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Documentation</a>
+                                    <a href={PROJECT_INFO.demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors">Project Reel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-mono text-gray-700 uppercase tracking-widest">
+                        <span className="text-white/44 uppercase ">{PROJECT_INFO.teamName}</span>
+                        <span className="opacity-45">© 2025 TUMORSENSE UNIT // ISAS AL SEEB</span>
+                        <span className="opacity-45 uppercase">All Systems Nominal</span>
+                    </div>
+                </Container>
+              </footer>
+            </div>
+          );
+        };
+
+        // ==================== PRESENTATION COMPONENT ====================
+        const PerfChart = ({ type }) => {
+          const getData = () => {
+            switch(type) {
+              case 'accuracy': return [12, 70, 82, 88, 94, 99];
+              case 'loss': return [95, 45, 25, 15, 10, 8];
+              case 'precision': return [10, 68, 85, 92, 95, 98];
+              case 'recall': return [10, 65, 84, 91, 94, 97];
+              default: return [10, 50, 70, 80, 90, 95];
+            }
+          };
+
+          const data = getData();
+          const maxValue = type === 'loss' ? 100 : 100;
+          const width = 280;
+          const height = 80;
+          const padding = 10;
+          
+          const points = data.map((val, i) => {
+            const x = (i / (data.length - 1)) * (width - 2 * padding) + padding;
+            const y = height - padding - ((val / maxValue) * (height - 2 * padding));
+            return `${x},${y}`;
+          }).join(' ');
+
+          return (
+            <div className="h-40 w-full glass rounded-2xl p-4 border border-white/5 relative group overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-white/10 group-hover:bg-red-600 transition-colors" />
+              <p className="text-[9px] font-mono text-gray-600 uppercase mb-2 flex justify-between">
+                <span>{type}</span>
+                <span className="opacity-40">SYSTEM_LOG_v1.0</span>
+              </p>
+              <svg width="100%" height="90" viewBox={`0 0 ${width} ${height}`} className="mt-2">
+                {/* Grid lines */}
+                <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="#333" strokeWidth="1" />
+                <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#333" strokeWidth="1" />
+                
+                {/* Line graph */}
+                <polyline
+                  points={points}
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth="2"
+                  className="group-hover:stroke-red-500 transition-colors"
+                />
+                
+                {/* Data points */}
+                {data.map((val, i) => {
+                  const x = (i / (data.length - 1)) * (width - 2 * padding) + padding;
+                  const y = height - padding - ((val / maxValue) * (height - 2 * padding));
+                  return (
+                    <circle
+                      key={i}
+                      cx={x}
+                      cy={y}
+                      r="2"
+                      fill="#fff"
+                      className="group-hover:fill-red-500 transition-colors"
+                    />
+                  );
+                })}
+              </svg>
+              <div className="flex justify-between text-[8px] text-gray-700 font-mono mt-1 px-2">
+                <span>EPOCH_1</span>
+                <span>EPOCH_10</span>
+              </div>
+              <div className="absolute bottom-3 right-4 text-xl font-bold text-white">{data[data.length - 1]}{type === 'loss' ? '' : '%'}</div>
+            </div>
+          );
+        };
+
+        const Presentation = () => {
+          const [currentSlide, setCurrentSlide] = useState(0);
+
+          const slides = [
+            {
+              title: "Slide 1: TITLE PAGE",
+              content: (
+                <div className="flex flex-col items-center justify-center text-center py-20 animate-fade-in">
+                  <p className="text-[10px] font-mono tracking-[0.6em] text-gray-600 mb-2 uppercase">{PROJECT_INFO.teamName}</p>
+                  <p className="text-[10px] font-mono tracking-[0.5em] text-gray-700 mb-2 uppercase">{PROJECT_INFO.organization}</p>
+                  <p className="text-[10px] font-mono tracking-[0.2em] text-gray-700 mb-8 uppercase text-center w-full">presents</p>
+                  <div className="relative inline-flex items-center">
+                    <DotTitle className="text-8xl md:text-9xl mb-4 leading-none">{PROJECT_INFO.title}</DotTitle>
+                    <RedDot />
+                  </div>
+                  <p className="text-xl md:text-2xl text-gray-400 font-light tracking-widest uppercase mb-16">{PROJECT_INFO.tagline}</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-left border-t border-white/10 pt-12 w-full">
+                    <div><p className="text-[10px] text-gray-600 mb-1 uppercase font-mono">Subject</p><p className="text-sm font-medium">{PROJECT_INFO.subject}</p></div>
+                    <div><p className="text-[10px] text-gray-600 mb-1 uppercase font-mono">Academic Year</p><p className="text-sm font-medium">{PROJECT_INFO.academicYear}</p></div>
+                    <div><p className="text-[10px] text-gray-600 mb-1 uppercase font-mono">Mentor</p><p className="text-sm font-medium">{PROJECT_INFO.mentor}</p></div>
+                    <div><p className="text-[10px] text-gray-600 mb-1 uppercase font-mono">Build Status</p><p className="text-sm font-medium text-red-500 uppercase tracking-widest">STABLE v1.0</p></div>
+                  </div>
+                </div>
+              )
+            },
+            {
+              title: "Slide 2: MEET THE TEAM",
+              content: (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in py-10">
+                  {TEAM_MEMBERS.map((member, i) => (
+                    <Card key={i} className="flex flex-col h-full bg-white/[0.02] border-white/5 p-6 hover:border-red-600/30">
+                       <div className="space-y-1 mb-4">
+                          <h5 className="text-xl font-bold uppercase tracking-tight text-white">{member.name}</h5>
+                          <p className="text-red-600 text-[8px] font-mono uppercase tracking-[0.3em] font-semibold">{member.role}</p>
+                       </div>
+                       <p className="text-[10px] text-gray-500 leading-relaxed flex-grow">"{member.description}"</p>
+                    </Card>
+                  ))}
+                </div>
+              )
+            },
+            {
+              title: "Slide 3: PROBLEM STATEMENT",
+              content: (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 animate-fade-in items-center py-20">
+                  <div className="space-y-6">
+                    <Tag>The Issue</Tag>
+                    <h3 className="text-3xl font-bold uppercase leading-none">Neurological <br/> Interference</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">Brain tumors interfere with essential neurological functions. In oncology, <b>timely diagnosis</b> is the single most critical factor for patient survival.</p>
+                  </div>
+                  <div className="space-y-6">
+                    <Tag>The Gap</Tag>
+                    <h3 className="text-3xl font-bold uppercase leading-none">Inaccessible <br/> Expertise</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">Accurate MRI interpretation requires extreme medical expertise, which is often <b>scarce or unavailable</b> in remote and underserved global regions.</p>
+                  </div>
+                  <div className="space-y-6">
+                    <Tag>The AI Solution</Tag>
+                    <h3 className="text-3xl font-bold uppercase leading-none">Consistency <br/> & Speed</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">Automating analysis via deep learning provides <b>consistent, near-instant, and accessible</b> detection for clinics everywhere.</p>
+                  </div>
+                </div>
+              )
+            },
+            {
+              title: "Slide 4: PROJECT OVERVIEW",
+              content: (
+                <div className="flex flex-col items-center justify-center py-20 space-y-16 animate-fade-in">
+                   <div className="text-center space-y-4">
+                      <h3 className="text-4xl font-bold uppercase tracking-widest">MULTI-CLASS CLASSIFICATION</h3>
+                      <p className="text-gray-500 text-sm max-w-2xl italic">One system to identify Glioma, Meningioma, Pituitary, or No Tumor with clinical accuracy.</p>
+                   </div>
+                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
+                      {[
+                        { label: "FRONTEND", tech: "React + Vite", host: "VERCEL" },
+                        { label: "BACKEND", tech: "Flask (Python)", host: "RENDER (GUNICORN)" },
+                        { label: "ML CORE", tech: "TensorFlow (TFLite)", host: "XCEPTION" },
+                        { label: "PROCESSING", tech: "Cloudinary", host: "IMAGE MANAGEMENT" },
+                      ].map((item, i) => (
+                        <div key={i} className="glass p-6 text-center border-white/5 rounded-3xl">
+                           <p className="text-[9px] font-mono text-gray-600 uppercase mb-4 tracking-[0.2em]">{item.label}</p>
+                           <p className="text-lg font-bold uppercase text-white mb-1">{item.tech}</p>
+                           <p className="text-[8px] font-mono text-red-600 uppercase tracking-widest">{item.host}</p>
+                        </div>
+                      ))}
+                   </div>
+                </div>
+              )
+            },
+            {
+              title: "Slide 5: SYSTEM ARCHITECTURE",
+              content: (
+                <div className="flex flex-col space-y-6 max-w-3xl mx-auto py-10 animate-fade-in">
+                  {WORKFLOW_STEPS.map((step, i) => (
+                    <div key={i} className="flex items-center gap-10 group">
+                      <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center font-mono text-xs group-hover:bg-white group-hover:text-black transition-all shrink-0">
+                        {step.step}
+                      </div>
+                      <div className="flex-grow border-b border-white/5 pb-4 group-last:border-none">
+                        <h4 className="text-xl font-bold uppercase tracking-tight text-white/90">{step.title}</h4>
+                        <p className="text-gray-500 text-sm">{step.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            },
+            {
+              title: "Slide 6: FRONTEND INFRASTRUCTURE",
+              content: (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 animate-fade-in items-center py-20">
+                  <div className="space-y-12">
+                    <div className="space-y-4">
+                      <Tag>The User Interface</Tag>
+                      <h3 className="text-5xl font-bold uppercase tracking-tighter text-white">Fast, Responsive <br/> Frontend</h3>
+                    </div>
+                    <div className="space-y-8">
+                      {FRONTEND_STACK.map((item, i) => (
+                        <div key={i} className="flex gap-6 group">
+                          <div className="text-red-500 font-mono text-xs mt-1">0{i+1}</div>
+                          <div className="space-y-1">
+                            <h5 className="text-xl font-bold uppercase tracking-tight group-hover:text-red-500 transition-colors">{item.name}</h5>
+                            <p className="text-xs text-gray-500 leading-relaxed max-w-sm">{item.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="relative">
+                     <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full" />
+                     <div className="relative glass aspect-square rounded-[3rem] p-8 flex flex-col items-center justify-center border border-white/10 overflow-hidden">
+                        <img 
+                          src="63817.png" 
+                          alt="Dashboard Interface"
+                          className="w-full h-full object-cover rounded-2xl border-2 border-white/20 shadow-2xl"
+                        />
+                        <div className="absolute bottom-8 left-8 right-8 bg-black/80 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+                           <p className="text-[10px] font-mono text-white uppercase tracking-[0.3em]">Live Interface Preview</p>
+                        </div>
+                     </div>
+                  </div>
+                </div>
+              )
+            },
+            {
+              title: "Slide 7: BACKEND ENGINE",
+              content: (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 animate-fade-in items-center py-20">
+                  <Card className="font-mono text-[9px] text-gray-600 bg-black/80 border-white/10 p-8 h-96 overflow-hidden relative shadow-2xl">
+                     <div className="absolute top-4 right-6 flex gap-1">
+                        <div className="w-2 h-2 rounded-full bg-white/10" />
+                        <div className="w-2 h-2 rounded-full bg-white/10" />
+                        <div className="w-2 h-2 rounded-full bg-red-600" />
+                     </div>
+                     <div className="space-y-1 opacity-80">
+                        <p className="text-white/40"># Initialize Engine</p>
+                        <p className="text-white">from flask import Flask, request</p>
+                        <p className="text-white">import tensorflow as tf</p>
+                        <p className="pt-4">app = Flask(__name__)</p>
+                        <p className="pt-2 text-red-500">@app.route('/predict', methods=['POST'])</p>
+                        <p>def handle_inference():</p>
+                        <p className="pl-4">file = request.files['image']</p>
+                        <p className="pl-4"># Load Xception weights</p>
+                        <p className="pl-4">pred = model.predict(file)</p>
+                        <p className="pl-4">return jsonify(pred)</p>
+                        <div className="pt-8 border-t border-white/5 mt-8">
+                           <p className="text-gray-700 italic">Deployment Ready: Gunicorn (Worker: 4)</p>
+                        </div>
+                     </div>
+                  </Card>
+                  <div className="space-y-12">
+                    <div className="space-y-4">
+                      <Tag>The Logic Core</Tag>
+                      <h3 className="text-5xl font-bold uppercase tracking-tighter text-white">Robust Python <br/> Backend</h3>
+                    </div>
+                    <div className="space-y-8">
+                      {BACKEND_STACK.map((item, i) => (
+                        <div key={i} className="flex gap-6">
+                          <div className="text-red-500 font-mono text-xs mt-1">0{i+1}</div>
+                          <div className="space-y-1">
+                            <h5 className="text-xl font-bold uppercase tracking-tight">{item.name}</h5>
+                            <p className="text-xs text-gray-500 leading-relaxed max-w-sm">{item.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            },
+            {
+              title: "Slide 8: MODEL ARCHITECTURE",
+              content: (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center animate-fade-in py-20">
+                  <div className="space-y-10">
+                    <div className="space-y-4">
+                       <Tag>Neural Network</Tag>
+                       <h3 className="text-4xl font-bold uppercase tracking-tight text-white leading-none">THE AI BRAIN: <br/> XCEPTION (TRANSFER LEARNING)</h3>
+                    </div>
+                    <ul className="space-y-5">
+                      {MODEL_DETAILS.layers.map((layer, i) => (
+                        <li key={i} className="flex gap-4 text-xs text-gray-500 font-mono items-center group">
+                          <span className="text-red-600 group-hover:translate-x-1 transition-transform">{'>>'}</span>
+                          <span className="group-hover:text-white transition-colors">{layer}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <Card className="font-mono text-[9px] leading-tight text-gray-600 h-96 overflow-auto bg-black border-white/5 p-8 shadow-inner">
+                    <pre className="opacity-90">{TRAINING_CODE_SNIPPET}</pre>
+                  </Card>
+                </div>
+              )
+            },
+            {
+              title: "Slide 9: TRAINING PROCESS",
+              content: (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-20 py-20 animate-fade-in items-center">
+                  <div className="space-y-12">
+                     <div className="space-y-8">
+                        <div>
+                           <Tag>Source</Tag>
+                           <p className="text-lg font-bold uppercase text-white mt-2">Masoud Nickparvar Brain Tumor MRI Dataset (Kaggle)</p>
+                        </div>
+                        <div>
+                           <Tag>Preprocessing</Tag>
+                           <p className="text-lg font-bold uppercase text-white mt-2">Random brightness adjustments (0.8 - 1.2)</p>
+                        </div>
+                        <div>
+                           <Tag>Specs</Tag>
+                           <p className="text-lg font-bold uppercase text-white mt-2">10 Epochs, Batch Size: 32</p>
+                        </div>
+                     </div>
+                  </div>
+                  <Card className="aspect-video flex items-center justify-center p-12 bg-white/[0.01]">
+                     <div className="text-center">
+                        <div className="text-[10rem] font-bold tracking-tighter leading-none text-white relative">
+                           99<span className="text-red-600 text-6xl">%</span>
+                           <div className="absolute -top-4 -right-12 px-3 py-1 bg-red-600 text-white text-[8px] font-mono rounded tracking-widest">VERIFIED</div>
+                        </div>
+                        <p className="text-[10px] font-mono text-gray-700 uppercase tracking-[0.6em] mt-4">OVERALL ACCURACY ACHIEVED</p>
+                     </div>
+                  </Card>
+                </div>
+              )
+            },
+            {
+              title: "Slide 10: PERFORMANCE ANALYSIS",
+              content: (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 py-10 animate-fade-in items-start">
+                  <div className="space-y-8">
+                    <div className="flex justify-between items-center">
+                       <Tag>Confusion Matrix</Tag>
+                       <span className="text-[8px] font-mono text-gray-700">656 TEST_SAMPLES</span>
+                    </div>
+                    <div className="glass p-8 rounded-[2rem] border-white/5 bg-black/20">
+                      <div className="grid grid-cols-5 gap-1 font-mono text-[10px] text-center">
+                        <div /> {CONFUSION_MATRIX_DATA.labels.map(l => <div key={l} className="opacity-40 uppercase truncate pb-1">{l.charAt(0)}</div>)}
+                        {CONFUSION_MATRIX_DATA.rows.map((row, i) => (
+                          <React.Fragment key={i}>
+                            <div className="opacity-40 uppercase text-right pr-3 flex items-center justify-end">{CONFUSION_MATRIX_DATA.labels[i].charAt(0)}</div>
+                            {row.map((val, j) => (
+                              <div key={j} className={`h-10 flex items-center justify-center rounded-xl font-bold ${i===j ? 'bg-sky-500 text-white shadow-lg' : 'bg-white/5 text-gray-800'}`}>
+                                {val}
+                              </div>
+                            ))}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      {CONFUSION_MATRIX_DATA.analysis.map((a, i) => (
+                        <div key={i} className="flex justify-between items-center text-[10px] uppercase border-b border-white/5 pb-2 group">
+                          <div className="flex items-center gap-3">
+                            <div className="w-1 h-1 rounded-full bg-red-600 opacity-40 group-hover:opacity-100 transition-opacity" />
+                            <span className="text-gray-500 group-hover:text-white transition-colors">{a.label}</span>
+                          </div>
+                          <span className="font-bold tracking-widest">{a.result}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                     <PerfChart type="accuracy" />
+                     <PerfChart type="loss" />
+                     <PerfChart type="precision" />
+                     <PerfChart type="recall" />
+                     <div className="col-span-2 pt-4 border-t border-white/5">
+                        <p className="text-[9px] text-gray-600 italic leading-relaxed text-right uppercase tracking-wider">
+                           Model stability reached at Epoch 10 with minimal divergence between training and validation metrics.
+                        </p>
+                     </div>
+                  </div>
+                </div>
+              )
+            },
+            {
+              title: "Slide 11: CONCLUSION & DEMO",
+              content: (
+                <div className="flex flex-col items-center justify-center text-center space-y-16 py-20 animate-fade-in">
+                   <div className="space-y-6">
+                      <h3 className="text-6xl font-bold uppercase tracking-tighter italic text-white">99% RELIABILITY REACHED.</h3>
+                      <p className="text-gray-500 max-w-2xl mx-auto text-lg leading-relaxed font-light">
+                         "The model has been stabilized for web-scale inference and is ready for clinical trial phase simulation."
+                      </p>
+                   </div>
+                   <div className="flex flex-wrap gap-8 justify-center">
+                      <Button variant="primary" onClick={() => window.open(PROJECT_INFO.appLink)}>LIVE WEB APP</Button>
+                      <Button variant="secondary" onClick={() => window.open(PROJECT_INFO.demoLink)}>VIDEO DEMO</Button>
+                   </div>
+                   <div className="pt-32 border-t border-white/10 w-full grid grid-cols-3 text-[9px] font-mono text-gray-700 uppercase tracking-[0.3em]">
+                      <span className="text-left">PROJECT BY: {PROJECT_INFO.teamName}</span>
+                      <span className="text-center">EST. 2025</span>
+                      <span className="text-right">CBSE AI CAPSTONE PROJECT</span>
+                   </div>
+                </div>
+              )
+            }
+          ];
+
+          const next = () => setCurrentSlide((s) => (s + 1) % slides.length);
+          const prev = () => setCurrentSlide((s) => (s - 1 + slides.length) % slides.length);
+
+          useEffect(() => {
+            const handleKey = (e) => {
+              if (e.key === 'ArrowRight' || e.key === ' ') next();
+              if (e.key === 'ArrowLeft') prev();
+            };
+            window.addEventListener('keydown', handleKey);
+            return () => window.removeEventListener('keydown', handleKey);
+          }, []);
+
+          return (
+            <div className="min-h-screen bg-black flex flex-col justify-between p-12 relative overflow-hidden font-inter text-white selection:bg-white selection:text-black">
+              <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                <DotTitle className="text-[15rem] m-0 text-white">0{currentSlide + 1}</DotTitle>
+              </div>
+
+              <div className="flex justify-between items-start relative z-10">
+                <div style={{animation: 'slideRight 0.5s ease-out'}}>
+                  <p className="text-[10px] text-gray-700 font-mono tracking-[0.4em] uppercase mb-2">{PROJECT_INFO.title} // SYSTEM DECK</p>
+                  <DotTitle className="text-4xl m-0 uppercase leading-none tracking-tighter text-white">{slides[currentSlide].title}</DotTitle>
+                </div>
+                <div className="text-[10px] font-mono text-gray-700 uppercase tracking-[0.4em]">
+                  PAGE [{String(currentSlide + 1).padStart(2, '0')} // {String(slides.length).padStart(2, '0')}]
+                </div>
+              </div>
+
+              <div className="flex-grow flex items-center justify-center max-w-7xl mx-auto w-full relative z-10">
+                <div key={currentSlide} className="w-full">
+                    {slides[currentSlide].content}
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center relative z-10">
+                <div className="flex gap-4 items-center">
+                    <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_rgba(255,0,0,0.5)]" />
+                    <span className="text-[10px] font-mono text-gray-700 uppercase tracking-widest">{PROJECT_INFO.title} UNIT // ALL SYSTEMS NOMINAL</span>
+                </div>
+                <div className="flex gap-12">
+                  <button onClick={prev} className="hover:text-white text-gray-700 transition-colors uppercase text-[11px] font-mono tracking-[0.3em] font-bold">BACK</button>
+                  <button onClick={next} className="hover:text-white text-gray-700 transition-colors uppercase text-[11px] font-mono tracking-[0.3em] font-bold">FORWARD</button>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // ==================== MAIN APP ====================
+        const App = () => {
+          const [viewMode, setViewMode] = useState('website');
+
+          return (
+            <div className="bg-black min-h-screen">
+              {/* Dynamic Mode Switcher */}
+              <div className="fixed top-6 right-6 z-50 flex gap-2 glass p-1 rounded-full nothing-border">
+                <button 
+                  onClick={() => setViewMode('website')}
+                  className={`px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${viewMode === 'website' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
+                >
+                  Website
+                </button>
+                <button 
+                  onClick={() => setViewMode('presentation')}
+                  className={`px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${viewMode === 'presentation' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
+                >
+                  Deck
+                </button>
+              </div>
+
+              {/* Main Content Area */}
+              <main className="transition-opacity duration-500">
+                {viewMode === 'website' ? <Website /> : <Presentation />}
+              </main>
+            </div>
+          );
+        };
+
+        // ==================== RENDER ====================
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
