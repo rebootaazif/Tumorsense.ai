@@ -85,7 +85,8 @@
           demoLink: "https://drive.google.com/file/d/1txo6RTWym7viTHOKnayzkD9LuiHrUxTD/view",
           datasetLink: "https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset",
           codeLink: "https://colab.research.google.com/drive/1FxMoBoSdw4-tPDjwneqVqZsWpYuBics6?usp=sharing",
-          documentationLink: "https://drive.google.com/file/d/1x5vGNnFcyptJWf0kpdSgdNIzKer1_oeq/view?usp=drive_link"
+          documentationLink: "https://drive.google.com/file/d/1x5vGNnFcyptJWf0kpdSgdNIzKer1_oeq/view?usp=drive_link",
+          videoLink: "https://drive.google.com/file/d/1q5-ViA4EML0YN1a7YyRFD0tBaQSPdEM2/preview"
         };
 
         const PICTURES = {
@@ -326,6 +327,26 @@ const Website = () => {
                             <div className="w-[1px] h-10 bg-white" />
                         </div>
                     </section>
+                    {/* Video Player Section - Between Scroll and Philosophy */}
+                    {PROJECT_INFO.videoLink && (
+                        <section className="py-20 px-8">
+                            <Container>
+                                <div className="flex justify-center items-center">
+                                    <div className="w-full max-w-5xl glass rounded-3xl nothing-border p-6 overflow-hidden animate-fade-in">
+                                        <div className="relative w-full" style={{ paddingBottom: '56.25%', minHeight: '500px' }}>
+                                            <iframe
+                                                src={PROJECT_INFO.videoLink}
+                                                className="absolute top-0 left-0 w-full h-full rounded-2xl"
+                                                frameBorder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </Container>
+                        </section>
+                    )}
 
               {/* Infrastructure Section */}
               <Container className="py-32 border-b border-white/5">
