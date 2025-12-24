@@ -61,6 +61,56 @@
           from { opacity: 0; transform: translateX(-20px); }
           to { opacity: 1; transform: translateX(0); }
         }
+        
+        /* 1. Hide default pointer */
+        * { cursor: none !important;
+        z-index: 20 }
+
+      
+        /* A white section to test the color-changing logic */
+        .light-section {
+            background-color: #ffffff;
+            color: #000;
+            height: 50vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dark-section {
+            height: 50vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 2. The Custom Cursor */
+        #nothing-cursor {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: #ffffff; /* Default White */
+            border: 1px solid #000000;
+            border-radius: 50%  ;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: 
+                background-color 0.3s ease, 
+                transform 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        /* State: On White Background or Hovering Link */
+        #nothing-cursor.accent-red {
+            background-color: #ff3131; /* Nothing Red */
+        }
+
+        /* State: Clicking */
+        #nothing-cursor.clicking {
+            transform: translate(-50%, -50%) scale(0.6);
+        }
+
+        a { color: inherit; font-weight: bold; text-decoration: underline; }
     </style>
     <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
@@ -68,6 +118,50 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <div id="nothing-cursor"></div>
+  <script>
+        const cursor = document.getElementById('nothing-cursor');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        // Smooth movement logic (Lerp)
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // Check what element is under the cursor
+            const elementUnder = document.elementFromPoint(mouseX, mouseY);
+            if (elementUnder) {
+                const bgColor = window.getComputedStyle(elementUnder).backgroundColor;
+                const isWhite = bgColor === "rgb(255, 255, 255)" || bgColor === "#ffffff";
+                const isLink = elementUnder.tagName === 'A' || elementUnder.closest('a');
+
+                // Turn red if background is white OR if hovering a link
+                if (isWhite || isLink) {
+                    cursor.classList.add('accent-red');
+                } else {
+                    cursor.classList.remove('accent-red');
+                }
+            }
+        });
+
+        // Animation Loop for smoothness
+        function animate() {
+            // Adjust the 0.2 value to change "laziness" (lower = smoother/slower)
+            cursorX += (mouseX - cursorX) * 0.2;
+            cursorY += (mouseY - cursorY) * 0.2;
+
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Click animations
+        window.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+        window.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+    </script>
     <div id="root"></div>
 
     <script type="text/babel">
